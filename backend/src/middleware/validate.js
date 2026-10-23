@@ -1,39 +1,33 @@
+import { validateText } from '../utils/validateText.js';
+
+const MAX_LENGTH = 15000; // generous but bounded
+
+function checkField(value, label) {
+    if (!value || typeof value !== 'string' || value.trim().length === 0) {
+        return `${label} is required.`;
+    }
+    if (value.length > MAX_LENGTH) {
+        return `${label} is too long (max ${MAX_LENGTH} characters).`;
+    }
+    return validateText(value, label); // length, word count, gibberish
+}
+
 export function validateAnalyzeInput(req, res, next) {
     const { cv, jobDescription } = req.body;
 
-    if (!cv || typeof cv !== 'string' || cv.trim().length === 0) {
-        return res.status(400).json({ error: 'CV text is required.' });
-    }
+    const error =
+        checkField(cv, 'CV text') ||
+        checkField(jobDescription, 'Job description');
 
-    if (!jobDescription || typeof jobDescription !== 'string' || jobDescription.trim().length === 0) {
-        return res.status(400).json({ error: 'Job description is required.' });
-    }
-
-    const MAX_LENGTH = 15000; // ~ a very long CV/JD, generous but bounded
-
-    if (cv.length > MAX_LENGTH) {
-        return res.status(400).json({ error: `CV text is too long (max ${MAX_LENGTH} characters).` });
-    }
-
-    if (jobDescription.length > MAX_LENGTH) {
-        return res.status(400).json({ error: `Job description is too long (max ${MAX_LENGTH} characters).` });
-    }
-
+    if (error) return res.status(400).json({ error });
     next();
 }
 
 export function validateJobAnalysisInput(req, res, next) {
     const { jobDescription } = req.body;
 
-    if (!jobDescription || typeof jobDescription !== 'string' || jobDescription.trim().length === 0) {
-        return res.status(400).json({ error: 'Job description is required.' });
-    }
+    const error = checkField(jobDescription, 'Job description');
 
-    const MAX_LENGTH = 15000;
-
-    if (jobDescription.length > MAX_LENGTH) {
-        return res.status(400).json({ error: `Job description is too long (max ${MAX_LENGTH} characters).` });
-    }
-
+    if (error) return res.status(400).json({ error });
     next();
 }

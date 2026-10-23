@@ -35,7 +35,7 @@ An AI-powered job-fit matcher that analyzes how well a CV matches a job descript
 ## Setup
 
 ### Prerequisites
-- Node.js 18+
+- Node.js 22+
 - A Google Gemini API key ([get one here](https://aistudio.google.com/apikey))
 
 ### Backend
