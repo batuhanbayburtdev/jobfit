@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import multer from 'multer';
 import rateLimit from 'express-rate-limit';
 import analyzeRoute from './src/routes/analyze.js';
 import extractCvRoute from './src/routes/extractCv.js';
@@ -39,6 +40,20 @@ app.use('/api/extract-cv', makeLimiter(30), extractCvRoute);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
+});
+
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        const msg = err.code === 'LIMIT_FILE_SIZE'
+            ? 'File is too large (max 5MB).'
+            : 'Invalid upload.';
+        return res.status(400).json({ error: msg });
+    }
+    if (err.message === 'UNSUPPORTED_FILE_TYPE') {
+        return res.status(400).json({ error: 'Only PDF and Word (.docx) files are supported.' });
+    }
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong. Please try again.' });
 });
 
 app.listen(PORT, () => {
