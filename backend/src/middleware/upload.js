@@ -9,7 +9,7 @@ const storage = multer.memoryStorage();
 
 export const upload = multer({
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    limits: { fileSize: 5 * 1024 * 1024, files: 1, fields: 5 }, // 5MB
     fileFilter: (req, file, cb) => {
         if (!ALLOWED_TYPES.includes(file.mimetype)) {
             return cb(new Error('UNSUPPORTED_FILE_TYPE'));
